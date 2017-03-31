@@ -1,0 +1,225 @@
+{include file="public/header"/}
+<style>
+    .layui-form-switch {
+        padding-left: 0px;
+        transition: .1s linear;
+    }
+    .layui-table tr th{text-align: center;}
+    .layui-table tr td{text-align: center;}
+</style>
+<div class="main-wrap">
+    <blockquote class="layui-elem-quote fhui-admin-main_hd">
+        <h2>东标-火辣健身留资列表</h2>
+    </blockquote>
+    <div class="y-role">
+        <!--工具栏-->
+        <div id="floatHead" class="toolbar-wrap">
+            <div class="toolbar">
+                <div class="box-wrap">
+                    <a class="menu-btn"></a>
+                    <div class="l-list">
+
+                        <a class="layui-btn layui-btn-small do-action" data-type="doDelete" data-href="{:url('del_log')}"><i class="fa fa-trash-o"></i>删除</a>
+                        <a class="layui-btn layui-btn-small do-action" data-type="doRefresh" data-href=""><i class="fa fa-refresh fa-spin"></i>刷新</a>
+                        <a class="layui-btn layui-btn-small do-action" data-type="doRefresh" data-href="{:url('Excel/index',['table'=>$table])}">导出数据</a>
+                         <div class="zySearch" id="zySearch"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" name="table" value="{$table}">
+        <!--/工具栏-->
+        <!--文字列表-->
+        <div class="fhui-admin-table-container">
+                <table class="layui-table" lay-skin="line">
+                <colgroup>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th><input type="checkbox" class="selected-all" id="selected-all"></th>
+                    <th>ID</th>
+                    <th>姓名</th>
+                    <th>手机号</th>
+                    <th>经销商</th>
+                    <th>车系车型</th>
+                    <th>获得奖品</th>
+                    <th>注册时间</th>
+                    <th style="text-align:center">是否启用</th>
+                    <th style="text-align:center">操作</th>
+                </tr>
+                </thead>
+                <script id="arlist" type="text/html">
+                    {{# for(var i=0;i<d.length;i++){  }}
+                      <tr>
+                          <td>
+                              <input ids="3031" name="ck" type="checkbox" value="true">
+
+                              <!--<input id="ck" ids="3031" name="ck" type="checkbox" value="true">
+                              <input name="ck" type="hidden" value="false">-->
+                          </td>
+                          <td>{{d[i].user_id}}</td>
+                          <td>{{d[i].name}}</td>
+                          <td>{{d[i].phone}}</td> 
+                          <td>{{d[i].dealer}}</td>
+                          <td>
+                            {{# if(d[i].models == null){ }}
+                              未选择经销商
+                             {{# }else{ }}
+                                {{d[i].models}}
+                             {{# } }}
+                          </td>
+                          <td>
+                            {{# if(d[i].lotter == 0){ }}
+                              未抽奖
+                             {{# }else{ }}
+                                {{d[i].lotter}}
+                             {{# } }}
+                          </td>
+                           <td>{{d[i].time}}</td>
+                          <td align="center">
+                             {{# if(d[i].status == 1){ }}
+                            <a href="javascript:;" class="change_status"  data-id="{{d[i].user_id}}">
+                                <div class="layui-unselect layui-form-switch layui-form-onswitch"><i></i></div>
+
+                            </a>
+                            {{# }else{ }}
+                            <a href="javascript:;" class="change_status" data-id="{{d[i].user_id}}">
+
+                                <div class="layui-unselect layui-form-switch"><i></i></div>
+                            </a>
+                            {{# } }} 
+                          </td>
+                          <td align="center">
+                              <a class="layui-btn layui-btn-small do-action" data-type="doEdit" data-href="{:url('DuserBedit',['table'=>$table])}" data-id="{{d[i].user_id}}"><i class="icon-edit  fa fa-pencil-square-o"></i>编辑</a>
+                              <a class="layui-btn layui-btn-small do-action" data-type="doDelOne" data-href="{:url('DuserBdel',['table'=>$table,'lotuser_table'=>$lotuser_table])}" data-id="{{d[i].user_id}}"><i class="icon-edit  fa fa-pencil-square-o"></i>删除</a>
+                          </td>
+                      </tr>
+                    {{# } }}
+                 </script>
+                <tbody id="article_list"></tbody>
+            </table>
+           <div id="demo" style='float:right;'></div>   
+        </div>
+        <div id="AjaxPage" style="margin-top: -57px;float: right;"></div>
+        <div style="float: right;margin-top: -9px;margin-right: 13px;">
+            共{$count}条数据，<span id="allpage"></span>
+        </div>
+    </div>
+</div>
+<input name="phone" type="hidden" value="{$phone}">
+{include file="public/footer"}
+<script>
+    /**
+     * [user_state 文章状态]
+     * @param  {[type]} val [description]
+     * @Author[jonny 980218641@qq.com]
+     */
+    var phone = $("input[name='phone']").val();
+    if(phone == "")
+    {
+        var url='{:url("Capital/user_dongbiao")}';
+    }
+    else
+    {
+        var url='{:url("Capital/user_dongbiao")}?phone='+phone;
+    }
+    var laytpl,laypage;
+    var allpages='{$allpage}';
+    layui.use(['layer', 'laypage','common', 'icheck','laytpl'], function () {
+        var $ = layui.jquery
+                , layer = layui.layer
+                , common = layui.common;
+        laytpl =layui.laytpl;
+        laypage = layui.laypage;
+
+        common.Ajaxpage();
+                //加载单选框样式
+        $(("[type='checkbox']")).iCheck({
+            checkboxClass: 'icheckbox_square-green',
+
+        });
+
+        //点击改变状态
+         $(document).on('click','.change_status', function () {
+            var id=$(this).attr('data-id');
+            var obs=$(this);
+            $.ajax({
+                url: '{:url("DstateBleval")}',
+                dataType: "json",
+                data:{'id':id},
+                type: "POST",
+                success: function(data){
+
+
+                    if(data.code == 1){
+                        obs.find('div').removeClass('layui-form-onswitch');
+                        layer.msg(data.msg,{icon:2,time:1500,shade: 0.1,});
+                    }else{
+                        obs.find('div').addClass('layui-form-onswitch');
+                        layer.msg(data.msg,{icon:1,time:1500,shade: 0.1,});
+                    }
+                },
+                error:function(ajaxobj)
+                {
+                    if(ajaxobj.responseText!='')
+                        alert(ajaxobj.responseText);
+                }
+            });
+        });
+
+
+        /*  //表格行点击勾选
+         $('.layui-table tbody tr').on('click', function () {
+         var $this = $(this);
+         var $input = $this.children('td').eq(0).find('input');
+         $input.on('ifChecked', function (e) {
+         $this.css('background-color', '#EEEEEE');
+         });
+         $input.on('ifUnchecked', function (e) {
+         $this.removeAttr('style');
+         });
+         $input.iCheck('toggle');
+         }).find('input').each(function () {
+         var $this = $(this);
+         $this.on('ifChecked', function (e) {
+         $this.parents('tr').css('background-color', '#EEEEEE');
+         });
+         $this.on('ifUnchecked', function (e) {
+         $this.parents('tr').removeAttr('style');
+         });
+         });*/
+        //全选
+        $(document).on('ifChanged','.selected-all', function (event) {
+            // alert(1);
+            var $input = $('.layui-table tbody tr td').find('input');
+            $input.iCheck(event.currentTarget.checked ? 'check' : 'uncheck');
+        });
+
+    });
+</script>
+<script type="text/javascript">
+    $("#zySearch").zySearch({
+      "width":"355",
+      "height":"33",
+      "parentClass":"pageTitle",
+      "callback":function(keyword){
+        console.info("搜索的关键字");
+        console.info(keyword);
+      }
+    });
+
+    $(".search-btn").click(function(){
+        var phone = $("#searchInput").val();
+        window.location.href="/public/index.php/admin/Capital/user_dongbiao.html?phone="+phone;
+    })
+</script>

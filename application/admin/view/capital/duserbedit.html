@@ -1,0 +1,203 @@
+{include file="public/header"}
+<div class="main-wrap" id='main-wrap'>
+    <blockquote class="layui-elem-quote fhui-admin-main_hd">
+        <h2>东标用户留资修改</h2>
+    </blockquote>
+    <form class="layui-form" action="add_article">
+     <input type="hidden" name="id" value="{$dealer_id}">
+     <input type="hidden" name="table" value="{$table}">
+        <div class="layui-form-item">
+            <label class="layui-form-label">姓名</label>
+            <div class="layui-input-inline">
+                <input class="layui-input" type="text" name="name" placeholder="姓名"  lay-verify="name" value="{$data['name']}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">电话</label>
+            <div class="layui-input-inline">
+                <input class="layui-input" type="text" name="phone" placeholder="电话"  lay-verify="required" value="{$data['phone']}">
+            </div>
+        </div>
+
+           <div class="layui-form-item">
+                <label class="layui-form-label">经销商</label>
+                <div class="layui-input-inline" style="width:120px;">
+                    <select name="province" lay-filter="province">
+                        <option value="">请选择省</option>
+                    </select>
+                </div>
+                <div class="layui-input-inline" style="width:120px;">
+                    <select name="city" lay-filter="city">
+                        <option value="">请选择市</option>
+                    </select>
+                </div>
+                <div class="layui-input-inline" style="width:120px;">
+                    <select name="area" lay-filter="area">
+                        <option value="">请选择县/区</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">车型</label>
+                <div class="layui-input-inline" style="width:120px;">
+                    <select name="models">
+                        <option value="0">请选择</option>
+                        <option value="32">4008</option>
+                        <option value="33">3008</option>
+                        <option value="34">2008</option>
+                    </select>
+                </div>
+            </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">状态</label>
+            <div class="layui-input-inline">
+                <input type="checkbox" checked="" name="status" lay-skin="switch" lay-filter="switchTest" title="开关"><div class="layui-unselect layui-form-switch layui-form-onswitch"><i></i></div>
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit="" lay-filter="add-role" data-href="{:url('DuserBedit')}">修改</button>
+                <a class="layui-btn layui-btn-small do-action" data-type="doGoBack" data-href=""><i class="fa fa-mail-reply"></i>返回上一页</a>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+<!-- 省市级数据 -->
+<script type="text/javascript" src="__js__/city_dealer.js"></script>
+{include file="public/footer"}
+<script>
+    layui.use(['form','common'], function(){
+        var $ = layui.jquery
+                ,common=layui.common
+                ,form = layui.form();
+        //自定义验证规则
+        form.verify({
+            name:function(value){
+                if(value == ""){
+                    return '会员名称不能为空';
+                }
+            }
+
+        });
+
+        //监听提交
+        form.on('submit(add-role)', function(data){
+            console.log(data);
+            var sub=true;
+            var url=$(this).data('href');
+            if(url){
+                if(sub){
+                    $.ajax({
+                        url: url,
+                        type: 'post',
+                        dataType: 'json',
+                        data: data.field,
+                        // console.log(data);
+                        success: function (data) {
+                            if (data.code == 1) {
+                                // location.href = rturl;
+                                common.layerAlertS(data.msg, '提示');
+                                window.location.href="{:url($table)}";
+                            }
+                            else {
+                                common.layerAlertE(data.msg, '提示');
+                            }
+                        },
+                        beforeSend: function () {
+                            //    // 一般是禁用按钮等防止用户重复提交
+                            $(data.elem).attr("disabled", "true").text("提交中...");
+                        },
+                        //complete: function () {
+                        //    $(sbbtn).removeAttr("disabled");
+                        //},
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            common.layerAlertE(textStatus, '提示');
+                        }
+                    });
+                }
+            }else{
+                common.layerAlertE('链接错误！', '提示');
+            }
+
+            return false;
+        });
+
+            //点击追加城市列表
+            //初始数据
+            var areaData = Area;
+            var $form;
+            var form;
+            var $;
+            layui.use(['jquery', 'form'], function() {
+                $ = layui.jquery;
+                form = layui.form();
+                $form = $('form');
+                loadProvince();
+            });
+
+             //加载省数据
+            function loadProvince() {
+                var proHtml = '';
+                for (var i = 0; i < areaData.length; i++) {
+                    proHtml += '<option value="' + areaData[i].dealer_id + '_' + areaData[i].city.length + '_' + i + '" >' + areaData[i].dealer_name + '</option>';
+                }
+                //初始化省数据
+                $form.find('select[name=province]').append(proHtml);
+                form.render();
+                form.on('select(province)', function(data) {
+                    // $form.find('select[name=area]').html('<option value="">请选择县/区</option>').parent().hide();
+                    $form.find('select[name=area]').html('<option value="">请选择县/区</option>').parent().show();
+                    var value = data.value;
+                    var d = value.split('_');
+                    var code = d[0];
+                    var count = d[1];
+                    var index = d[2];
+                    if (count > 0) {
+                        loadCity(areaData[index].city);
+                    } else {
+                        // $form.find('select[name=city]').parent().hide();
+                        $form.find('select[name=city]').parent().show();
+                    }
+                });
+            }
+             //加载市数据
+            function loadCity(citys) {
+                var cityHtml = '';
+                for (var i = 0; i < citys.length; i++) {
+                    cityHtml += '<option value="' + citys[i].dealer_id + '_' + citys[i].dealer.length + '_' + i + '">' + citys[i].dealer_name + '</option>';
+                }
+                $form.find('select[name=city]').html(cityHtml).parent().show();
+                form.render();
+                form.on('select(city)', function(data) {
+                    var value = data.value;
+                    var d = value.split('_');
+                    var code = d[0];
+                    var count = d[1];
+                    var index = d[2];
+                    if (count > 0) {
+                        loadArea(citys[index].dealer);
+                    } else {
+                        // $form.find('select[name=area]').parent().hide();
+                        $form.find('select[name=area]').parent().show();
+                    }
+                });
+            }
+             //加载县/区数据
+            function loadArea(areas) {
+                var areaHtml = '';
+                for (var i = 0; i < areas.length; i++) {
+                    areaHtml += '<option value="' + areas[i].dealer_id + '">' + areas[i].dealer_name + '</option>';
+                }
+                $form.find('select[name=area]').html(areaHtml).parent().show();
+                form.render();
+                form.on('select(area)', function(data) {
+                    //console.log(data);
+                });
+            }
+    });
+</script>

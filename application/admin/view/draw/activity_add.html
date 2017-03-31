@@ -1,0 +1,172 @@
+{include file="public/header"}
+<div class="main-wrap">
+    <blockquote class="layui-elem-quote fhui-admin-main_hd">
+        <h2>添加奖品活动</h2>
+    </blockquote>
+    <form class="layui-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label">活动名称</label>
+            <div class="layui-input-inline">
+                <input class="layui-input" type="text" name="draw_name" placeholder="活动名称"  lay-verify="title">
+            </div>
+        </div>
+        <div class="layui-form-item" style="margin-top: 15px;">
+          <div class="layui-form-item">
+            <label class="layui-form-label">项目周期</label>
+            <div class="layui-input-inline">
+              <input class="layui-input" style="width:300px;" name="begintime" placeholder="开始日" id="LAY_demorange_s">
+            </div>
+            <div class="layui-input-inline">
+              <input class="layui-input" style="width:300px;" name="endtime" placeholder="截止日" id="LAY_demorange_e">
+            </div>
+          </div>
+        </div>  
+        <!-- <div class="layui-form-item layui-form-text" style="width:780px;">
+          <label class="layui-form-label">活动描述</label>
+          <div class="layui-input-block">
+            <textarea placeholder="请输入内容" name="details" class="layui-textarea"></textarea>
+          </div>
+        </div> -->
+        <div class="layui-form-item layui-form-text">
+          <label class="layui-form-label">活动描述</label>
+          <div class="layui-input-block" style="width:700px;">
+            <textarea class="layui-textarea layui-hide" name="details" lay-verify="content" id="LAY_demo_editor"></textarea>
+          </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">活动表名</label>
+            <div class="layui-input-inline">
+                <input class="layui-input" type="text" name="drawtable_name" placeholder="活动表名"  lay-verify="title">
+            </div>
+            <span style="color:#aaa;">* 这里添加活动表名称 注: 以lottery_开头命名</span>
+        </div>
+
+          
+        <!-- <div class="layui-form-item">
+            <label class="layui-form-label">真实姓名</label>
+            <div class="layui-input-inline">
+                <input class="layui-input" type="text" name="real_name" placeholder="真实姓名"  lay-verify="required">
+            </div>
+        </div> -->
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">状态</label>
+            <div class="layui-input-inline">
+                <input type="checkbox" checked="" name="start" lay-skin="switch" lay-filter="switchTest" title="开关"><div class="layui-unselect layui-form-switch layui-form-onswitch"><i></i></div>
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit="" lay-filter="add-role" data-href="{:url('activity_add')}">立即提交</button>
+                <a class="layui-btn layui-btn-small do-action" data-type="doGoBack" data-href=""><i class="fa fa-mail-reply"></i>返回上一页</a>
+            </div>
+        </div>
+    </form>
+
+</div>
+{include file="public/footer"}
+
+<script>
+    layui.use(['layedit', 'laydate','common'], function(){
+      var form = layui.form()
+      ,layer = layui.layer
+      ,common=layui.common
+      ,layedit = layui.layedit
+      ,laydate = layui.laydate;
+      
+      //创建一个编辑器
+      var editIndex = layedit.build('LAY_demo_editor');
+     
+      //自定义验证规则
+      form.verify({
+        title: function(value){
+          if(value.length < 3){
+            return '活动名称至少得3个字符啊';
+          }
+        }
+        ,pass: [/(.+){6,12}$/, '密码必须6到12位']
+        ,content: function(value){
+          layedit.sync(editIndex);
+        }
+      });
+      
+      //监听指定开关
+      form.on('switch(switchTest)', function(data){
+        layer.msg('开关checked：'+ (this.checked ? 'true' : 'false'), {
+          offset: '6px'
+        });
+        layer.tips('温馨提示：请注意开关状态的文字可以随意定义，而不仅仅是ON|OFF', data.othis)
+      });
+      
+     //监听提交
+        form.on('submit(add-role)', function(data){
+            var sub=true;
+            var url=$(this).data('href');
+            if(url){
+                if(sub){
+                    $.ajax({
+                        url: url,
+                        type: 'post',
+                        dataType: 'json',
+                        data: data.field,
+                        success: function (data) {
+                            if (data.code == 1) {
+                                // location.href = rturl;
+                                common.layerAlertS(data.msg, '提示');
+                                window.location.href="{:url('draw/activity_list')}";
+                            }
+                            else {
+                                common.layerAlertE(data.msg, '提示');
+                            }
+                        },
+                        beforeSend: function () {
+                            //    // 一般是禁用按钮等防止用户重复提交
+                            $(data.elem).attr("disabled", "true").text("提交中...");
+                        },
+                        //complete: function () {
+                        //    $(sbbtn).removeAttr("disabled");
+                        //},
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            common.layerAlertE(textStatus, '提示');
+                        }
+                    });
+                }
+            }else{
+                common.layerAlertE('链接错误！', '提示');
+            }
+
+            return false;
+        });
+
+       var start = {
+            min: laydate.now()
+            ,max: '2099-06-16 23:59:59'
+            ,istoday: false
+            ,choose: function(datas){
+              end.min = datas; //开始日选好后，重置结束日的最小日期
+              end.start = datas //将结束日的初始值设定为开始日
+            }
+      };
+  
+  var end = {
+    min: laydate.now()
+    ,max: '2099-06-16 23:59:59'
+    ,istoday: false
+    ,choose: function(datas){
+      start.max = datas; //结束日选好后，重置开始日的最大日期
+    }
+  };
+  
+  document.getElementById('LAY_demorange_s').onclick = function(){
+    start.elem = this;
+    laydate(start);
+  }
+  document.getElementById('LAY_demorange_e').onclick = function(){
+    end.elem = this
+    laydate(end);
+  }
+
+    }); 
+</script>
