@@ -1,5 +1,5 @@
 ﻿layui.config({
-    base: "/public/statisc/layui/lay/modules/extendplus/"
+    base: "/Flow/public/statisc/layui/lay/modules/extendplus/"
 }).extend({
     navbar: "navbar/navbar",
     tab: "navbar/tab",

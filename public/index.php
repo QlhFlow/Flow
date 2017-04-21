@@ -2,6 +2,7 @@
 header('content-type:text/html;charset=utf8');
 Header("Access-Control-Allow-Origin: * ");
 Header("Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE");
+header('Cache-Control: no-cache, no-store, max-age=300, must-revalidate');//设置缓存
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------

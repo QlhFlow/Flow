@@ -16,7 +16,7 @@ class SecureModel extends Model
 {
     protected $table = '';
 
-
+    
 	/**
 	 * 信息检测	//无效信息，返回1,默认返回0
 	 * @param [type] $str [description]

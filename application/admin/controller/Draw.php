@@ -90,6 +90,7 @@ class Draw extends Base
 	{
 		$draw = new DrawModel();
 		$lotid = input("param.id");
+		// echo $lotid;die;
 		$TableName = DB::name("draw")->where("draw_id",$lotid)->find();
 		$PrizeDetail = $draw->ActivityDetails($TableName['drawtable_name']);
 		$this->assign("data",$PrizeDetail);

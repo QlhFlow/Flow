@@ -17,7 +17,7 @@
             $(this).height($content.height());
         });
     }).resize();
-    $.getJSON('/public/index.php/admin/ajax/getMenuList',{},function(data){
+    $.getJSON('/Flow/public/index.php/admin/ajax/getMenuList',{},function(data){
         navbar.set({
             elem: '#admin-navbar-side',
             data: data

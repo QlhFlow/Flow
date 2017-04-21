@@ -20,4 +20,4 @@ use think\Route;
 //     ],
 
 // ];
-// Route::rule('FlowAdmin','index.php/admin/index/index');//默认登录首页
+Route::rule('FlowAdmin','index.php/admin/index/index');//默认登录首页`	

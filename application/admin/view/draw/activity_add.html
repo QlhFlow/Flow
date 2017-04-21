@@ -14,10 +14,12 @@
           <div class="layui-form-item">
             <label class="layui-form-label">项目周期</label>
             <div class="layui-input-inline">
-              <input class="layui-input" style="width:300px;" name="begintime" placeholder="开始日" id="LAY_demorange_s">
+              <!-- <input class="layui-input" style="width:300px;" name="begintime" placeholder="开始日" id="LAY_demorange_s"> -->
+              <input class="layui-input" style="width:300px;" name="begintime" placeholder="开始日期" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
             </div>
             <div class="layui-input-inline">
-              <input class="layui-input" style="width:300px;" name="endtime" placeholder="截止日" id="LAY_demorange_e">
+              <!-- <input class="layui-input" style="width:300px;" name="endtime" placeholder="截止日" id="LAY_demorange_e"> -->
+              <input class="layui-input" style="width:300px;" name="endtime" placeholder="结束日期" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
             </div>
           </div>
         </div>  

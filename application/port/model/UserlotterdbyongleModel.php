@@ -32,12 +32,26 @@ class UserlotterdbyongleModel extends Model
     	$userId = Db::name($this->table)->getLastInsID();
 
     	//判断抽奖活动是否结束
-		$endtime = strtotime("2017-04-30 23:59:59");//活动结束时间
-		$begintime = time();//当前时间
-		if($begintime > $endtime)
-		{
-			return array("start"=>2007,"msg"=>"数据保存成功，但活动已经结束");
-		}
+    	$TimeData = DB::name("draw")->where("drawtable_anme","lottery_db_yongle")->field("begintime,endtime")->find();
+    	$begintime = strtotime($TimeData['begintime']);//活动开始时间
+    	$endtime = strtotime($TimeData['endtime']);//活动结束时间
+    	$AtTime = time();//当前时间
+    	if($AtTime < $begintime)
+    	{
+    		return array("start"=>2009,"msg"=>"数据保存成功，但活动未开始");
+    	}
+
+    	if($AtTime > $endtime)
+    	{
+    		return array("start"=>2007,"msg"=>"数据保存成功，但活动已经结束");
+    	}
+    	//判断抽奖活动是否结束
+		// $endtime = strtotime("2017-04-30 23:59:59");//活动结束时间
+		// $begintime = time();//当前时间
+		// if($begintime > $endtime)
+		// {
+		// 	return array("start"=>2007,"msg"=>"数据保存成功，但活动已经结束");
+		// }
 		
     	if($userId > 1)
     	{
@@ -74,6 +88,7 @@ class UserlotterdbyongleModel extends Model
     {
     	//检测确认是否插入成功，并获取用户手机号码
 		$phone = $this->Ckgetphone($userId);
+		// $phone = 15035574759;
 
 		//查询奖品 概率 数量
     	$LotterData = DB::name("lottery_db_yongle")->select();

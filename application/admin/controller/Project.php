@@ -46,7 +46,7 @@ class Project extends Base
             $data['time'] = date("Y-m-d H:i:s");
             $data['project_name'] = $str['project_name'];
             $data['database_name'] = $str['database_name'];
-            $data['draw_id'] = 1;
+            $data['draw_id'] = $str['draw_id'];
             if($str['start'] == 'on'){$data['start'] = 0;}
             // print_r($data);die;
             $flag = $project->project_add($data);

@@ -1,6 +1,6 @@
 <?php
 /**
- * 极客之家 高端PHP - 东标用户-美团注册抽奖Model
+ * 极客之家 高端PHP - 东标-Vista看天下 用户注册抽奖Model
  * @copyright  Copyright (c) 2016 QIN TEAM (http://www.qlh.com)
  * @license    GUN  General Public License 2.0
  * @version    Id:  Type_model.php 2016-6-12 16:36:52
@@ -8,9 +8,9 @@
 namespace app\port\model;
 use think\Model;
 use think\Db;
-class UserlotterdbmeituanModel extends Model
+class UserlotterdbvistaModel extends Model
 {
-    protected $table = 'user_db_meituan';
+    protected $table = 'user_db_vista';
 
     /**
      * 添加用户入库 进行抽奖活动
@@ -32,7 +32,7 @@ class UserlotterdbmeituanModel extends Model
     	$userId = Db::name($this->table)->getLastInsID();
 
     	//判断抽奖活动是否结束
-    	$TimeData = DB::name("draw")->where("drawtable_anme","lottery_db_meituan")->field("begintime,endtime")->find();
+    	$TimeData = DB::name("draw")->where("drawtable_anme","lottery_db_vista")->field("begintime,endtime")->find();
     	$begintime = strtotime($TimeData['begintime']);//活动开始时间
     	$endtime = strtotime($TimeData['endtime']);//活动结束时间
     	$AtTime = time();//当前时间
@@ -45,9 +45,8 @@ class UserlotterdbmeituanModel extends Model
     	{
     		return array("start"=>2007,"msg"=>"数据保存成功，但活动已经结束");
     	}
-    	
-    	//判断抽奖活动是否结束
 		// $endtime = strtotime("2017-04-30 23:59:59");//活动结束时间
+
 		// $begintime = time();//当前时间
 		// if($begintime > $endtime)
 		// {
@@ -80,8 +79,6 @@ class UserlotterdbmeituanModel extends Model
     	}
     }
 
-    
-
 
     /**
      * 开始抽奖
@@ -93,7 +90,7 @@ class UserlotterdbmeituanModel extends Model
 		$phone = $this->Ckgetphone($userId);
 
 		//查询奖品 概率 数量
-    	$LotterData = DB::name("lottery_db_meituan")->select();
+    	$LotterData = DB::name("lottery_db_vista")->select();
     	if($LotterData)
     	{
     		foreach($LotterData as $vall){
@@ -180,7 +177,7 @@ class UserlotterdbmeituanModel extends Model
      */
 	public function LotGoods($id)
 	{
-		$end = Db::name('lottery_db_meituan')->field('num')->where('id',$id)->select();
+		$end = Db::name('lottery_db_vista')->field('num')->where('id',$id)->select();
 		if(isset($end[0]['num']))
 		{
 			return $end[0]['num'];
@@ -197,7 +194,7 @@ class UserlotterdbmeituanModel extends Model
 	 */
 	public function SendLotUser($data)
 	{
-		return Db::name('lotuser_db_meituan')->insert($data);
+		return Db::name('lotuser_db_vista')->insert($data);
 	}
 
 	/**
@@ -207,7 +204,7 @@ class UserlotterdbmeituanModel extends Model
 	public function CkHavecj($userId)
 	{
 		$phone = $this->Ckgetphone($userId);
-		$res = Db::name('lotuser_db_meituan')->where('phone',$phone)->find();
+		$res = Db::name('lotuser_db_vista')->where('phone',$phone)->find();
 		return $res['phone'];
 	}
 
@@ -217,7 +214,7 @@ class UserlotterdbmeituanModel extends Model
 	 */
 	public function UpdLotGoods($id)
 	{
-		return Db::name('lottery_db_meituan')->where('id',$id)->setDec('num');
+		return Db::name('lottery_db_vista')->where('id',$id)->setDec('num');
 	}
 
 	/**
@@ -226,7 +223,7 @@ class UserlotterdbmeituanModel extends Model
 	 */
 	public function Ckgetphone($userid)
 	{
-		$end = Db::name('user_db_meituan')->field('phone')->where('user_id',$userid)->select();
+		$end = Db::name('user_db_vista')->field('phone')->where('user_id',$userid)->select();
 		if($end)
 		{
 			return $end[0]['phone'];

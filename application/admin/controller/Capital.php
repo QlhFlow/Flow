@@ -222,6 +222,76 @@ class Capital extends Base
             return $this->fetch();
     }
 
+    /**
+     * 东标-Vista用户留资列表
+     * @return [type] [description]
+     */
+    function user_db_vista()
+    {
+        $serchName = input("param.phone");
+        if(isset($serchName) || !empty($serchName)){
+            $where = "phone='$serchName'";
+        }
+        else
+        {
+            $where = 1;
+        }
+        $project_tablename = "user_db_vista";
+        $lotuser_table = "lotuser_db_vista";//奖品表
+        $key = input('key');
+        $map = [];
+        if($key&&$key!==""){
+            $map['admin_id'] =  $key;          
+        }  
+        $res = Db::name("user_db_vista")->order("user_id desc")->select();
+            
+            $Nowpage = input('get.page') ? input('get.page'):1;
+            $limits = 10;// 获取总条数
+            $count = Db::name('user_db_vista')->where($where)->count();//计算总页面
+            $allpage = intval(ceil($count / $limits));
+            $lists = Db::name('user_db_vista')->where($where)->page($Nowpage, $limits)->order('user_id desc')->select();     
+
+            //查询经销商
+            foreach ($lists as $key => $val) {
+                $array = Db::name("dealer_dongbiao")->where("dealer_id",'in',$val['dealer_name'])->select();
+                $arr = array(); 
+                foreach ($array as $kk => $vv) {
+                    $arr[] = $vv['dealer_name'];
+                }
+                $string = join(",",$arr);
+                $lists[$key]['dealer'] = mb_strlen($string, 'utf-8') > 9 ? mb_substr($string, 0, 9, 'utf-8').'....' :$string;
+                $lists[$key]['time'] = date("Y-m-d H:i:s",$val['time']);
+
+                //查询用户获得的奖品
+                $lists[$key]['lotter'] = 0;
+                $lotterArray = DB::name("user_db_vista")->alias("d")->join("flow_lotuser_db_vista l","l.userid=d.user_id")->field("d.user_id,l.lotid,l.userid")->where("d.user_id",$val['user_id'])->select();
+                foreach ($lotterArray as $k => $v) {
+                    $res = DB::name("lottery_db_vista")->where("id",$v['lotid'])->field("name,id")->select();
+                    foreach ($res as $kkk => $vvv) {
+                        $lists[$key]['lotter'] = $vvv['name'];
+                    }
+                }
+                
+                //查询车型
+                $ModelCar = DB::name("car_series")->where("car_id",$val['models'])->field("car_id,car_name")->find();
+                $lists[$key]['models'] = $ModelCar['car_name'];
+            }
+            // print_r($lists);die;
+            $Ip = new IpLocation('UTFWry.dat'); // 实例化类 参数表示IP地址库文件
+            $this->assign('Nowpage', $Nowpage); //当前页
+            $this->assign('allpage', $allpage); //总页数 
+            $this->assign('count', $count);
+            $this->assign("search_user",$res);
+            $this->assign('val', $key);
+            $this->assign('table', $project_tablename);//用户表
+            $this->assign('lotuser_table', $lotuser_table);//奖品表
+            $this->assign("phone",$serchName);//搜索条件
+            if(input('get.page')){
+                return json($lists);
+            }
+            return $this->fetch();
+    }
+
 	/**
 	 * 宝沃留资列表
 	 * @return [type] [description]

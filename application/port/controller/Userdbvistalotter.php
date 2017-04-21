@@ -1,7 +1,7 @@
 <?php
 /**
  * 极客之家 高端PHP - 抽奖模块
- * 东标-永乐票务抽奖模块
+ * 东标-Vista看天下抽奖模块
  * @copyright  Copyright (c) 2016 QIN TEAM (http://www.qlh.com)
  * @license    GUN  General Public License 2.0
  * @version    Id:  Type_model.php 2016-6-12 16:36:52
@@ -14,9 +14,9 @@ use think\Session;
 use think\Cache;
 use think\Loader;
 use app\port\model\SecureModel;
-use app\port\model\UserlotterdbyongleModel;
+use app\port\model\UserlotterdbvistaModel;
 use app\port\model\LotteryModel;
-class Userdbyonglelotter extends Controller
+class Userdbvistalotter extends Controller
 {
 	/**
 	 * 用户注册抽奖
@@ -26,7 +26,7 @@ class Userdbyonglelotter extends Controller
 	{
 		//end by song
 		$secure = new SecureModel;
-		$Userlotter = new UserlotterdbyongleModel;
+		$Userlotter = new UserlotterdbvistaModel;
 
 		//edit by song
 		$data = input("param.");
@@ -54,7 +54,7 @@ class Userdbyonglelotter extends Controller
 		}
 
 		// //判断手机号是否存在
-		$phoneBe = DB::name("user_db_yongle")->where("phone",$data['numberphone'])->find();
+		$phoneBe = DB::name("user_db_vista")->where("phone",$data['numberphone'])->find();
 		if($phoneBe || !empty($phoneBe)){
 			exit(json_encode(array("start"=>1003,"msg"=>"该手机已经注册")));
 		}
@@ -70,56 +70,6 @@ class Userdbyonglelotter extends Controller
 		exit(json_encode($arr));
 	}
 	
-
-	 /**
-     * 用户在中游提交成功后进行备份数据到下游数据库 方法
-     * @param [type] $data [description]
-     */
-	// function DuserBlotter()
-	// {
-	// 	//edit by song
-	// 	$data = input("param.");
-	// 	if(!isset($data['lotid']) || empty($data['lotid'])){
-	// 		exit(json_encode(array("start"=>3007,"msg"=>"奖品id未定义")));
-	// 	}
-	//  	if(!isset($data) || empty($data['numberphone'])){
-	// 		exit(json_encode(array("start"=>3001,"msg"=>"数据传入有误")));
-	// 	}
-	// 	// $encckend = 1; //设置默认值
-	// 	if(!isset($data['key']))
-	// 	{
-	// 		exit(json_encode(array("start"=>3002,"msg"=>"未定义key值")));
-	// 	}
-
-	// 	// //判断手机号是否存在
-	// 	$phoneBe = DB::name("user_dongbiao")->where("phone",$data['numberphone'])->find();
-	// 	if($phoneBe || !empty($phoneBe)){
-	// 		exit(json_encode(array("start"=>3003,"msg"=>"该手机已经注册")));
-	// 	}
-	 
-	// 	$enc = $data['key'];  //加密串 检测 
-	// 	$encckend = $this->Ckencstr($enc); //检测结果 
-		
-	// 	//return json_encode( $encckend);
-	// 	if($encckend != 1)
-	// 	 {
-	// 		 exit(json_encode($encckend));
-	// 	 } 
-
-	// 	//end by song
-	// 	$Userlotter = new UserlotterdbModel;
-
-	// 	//开始入库备份数据
-	// 	$arr = $Userlotter->UserAdddb($data,$data['lotid']);
-	// 	if($arr >= 1)
-	// 	{
-	// 		exit(json_encode(array("start"=>3004,"msg"=>"数据备份成功")));
-	// 	}
-	// 	else
-	// 	{
-	// 		exit(json_encode(array("start"=>3005,"msg"=>"数据备份失败")));
-	// 	}
-	// }
 	
 	/**
 	 * 检测中游注册用户 此手机号是否已在本系统注册
@@ -128,7 +78,7 @@ class Userdbyonglelotter extends Controller
 	function DuserBphone()
 	{
 		$secure = new SecureModel;
-		$Userlotter = new UserlotterdbyongleModel;
+		$Userlotter = new UserlotterdbvistaModel;
 
 		$data = input('param.');
 		if(!isset($data) || empty($data['numberphone']))
@@ -168,10 +118,5 @@ class Userdbyonglelotter extends Controller
 		}
 	}
 
-	function EndUserLotter()
-	{
-		$Userlotter = new UserlotterdbyongleModel;
-		$res = $Userlotter->EndUserLotter(1);
-		print_r($res);
-	}
+	
 }
